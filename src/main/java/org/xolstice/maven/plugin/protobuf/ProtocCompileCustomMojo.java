@@ -25,6 +25,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.toolchain.Toolchain;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * This mojo executes the {@code protoc} compiler with the specified plugin
@@ -153,6 +154,17 @@ public final class ProtocCompileCustomMojo extends AbstractProtocCompileMojo {
                 } else {
                     //assign the path to executable from toolchains
                     pluginExecutable = tc.findTool(pluginTool);
+                }
+            }
+        }
+        if (pluginExecutable == null && autoDetectForOsClassifier != null) {
+            List<Artifact> dependencyArtifacts = getDependencyArtifacts();
+            for (Artifact dependencyArtifact : dependencyArtifacts) {
+                if (dependencyArtifact.getGroupId().equals("io.grpc") && dependencyArtifact.getArtifactId().equals("grpc-core")) {
+                    String grpcVersion = dependencyArtifact.getVersion();
+                    pluginArtifact = "io.grpc:protoc-gen-grpc-java:" + grpcVersion + ":exe:" + autoDetectForOsClassifier;
+                    getLog().info("Auto-discovered grpc " + grpcVersion + " (artifact=" + pluginArtifact + ")");
+                    break;
                 }
             }
         }

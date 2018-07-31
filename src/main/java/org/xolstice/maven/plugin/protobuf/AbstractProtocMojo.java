@@ -222,6 +222,18 @@ abstract class AbstractProtocMojo extends AbstractMojo {
     private String protocArtifact;
 
     /**
+     * When this parameter is set, the plugin attempts to resolve the specified artifact as {@code protoc} executable
+     * based on the supplied OS classifier and the current versions of protobuf and grpc.
+     *
+     * @since 0.5.2
+     */
+    @Parameter(
+            required = false,
+            property = "autoDetectForOsClassifier"
+    )
+    protected String autoDetectForOsClassifier;
+
+    /**
      * Additional source paths for {@code .proto} definitions.
      */
     @Parameter(
@@ -507,6 +519,17 @@ abstract class AbstractProtocMojo extends AbstractMojo {
                         } else {
                             //assign the path to executable from toolchains
                             protocExecutable = tc.findTool("protoc"); //NOI18N
+                        }
+                    }
+                    if (protocExecutable == null && autoDetectForOsClassifier != null) {
+                        List<Artifact> dependencyArtifacts = getDependencyArtifacts();
+                        for (Artifact dependencyArtifact : dependencyArtifacts) {
+                            if (dependencyArtifact.getGroupId().equals("com.google.protobuf") && dependencyArtifact.getArtifactId().equals("protobuf-java")) {
+                                String protobufVersion = dependencyArtifact.getVersion();
+                                protocArtifact = "com.google.protobuf:protoc:" + protobufVersion + ":exe:" + autoDetectForOsClassifier;
+                                getLog().info("Auto-discovered protobuf " + protobufVersion + " (artifact=" + protocArtifact + ")");
+                                break;
+                            }
                         }
                     }
                     if (protocExecutable == null && protocArtifact != null) {
