@@ -20,11 +20,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.xolstice.maven.plugins</groupId>
+    <groupId>au.com.livewirelabs.maven.plugins</groupId>
     <artifactId>protobuf-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <name>Maven Protocol Buffers Plugin</name>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>1.0.0</version>
     <url>https://www.xolstice.org/protobuf-maven-plugin</url>
     <description>Maven Plugin that executes the Protocol Buffers (protoc) compiler</description>
     <inceptionYear>2016</inceptionYear>
@@ -84,20 +84,16 @@
     </scm>
 
     <distributionManagement>
-        <downloadUrl>https://bintray.com/xolstice/maven/protobuf-maven-plugin/view</downloadUrl>
-        <site>
-            <!--
-                release:perform checks this element to determine whether site-deploy goal needs to be run.
-                The actual site deployment is done by GitHub site-maven-plugin, so the URL here is not used.
-            -->
-            <id>gh-pages</id>
-            <url>https://github.com/xolstice/protobuf-maven-plugin/tree/gh-pages</url>
-        </site>
         <repository>
-            <id>bintray</id>
-            <name>Releases on Bintray</name>
-            <url>https://api.bintray.com/maven/xolstice/maven/protobuf-maven-plugin</url>
+            <id>nexus</id>
+            <name>Nexus Release Repository</name>
+            <url>https://nexus.livewirelabs.com.au/content/repositories/releases</url>
         </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Nexus Snapshot Repository</name>
+            <url>https://nexus.livewirelabs.com.au/content/repositories/snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <issueManagement>
