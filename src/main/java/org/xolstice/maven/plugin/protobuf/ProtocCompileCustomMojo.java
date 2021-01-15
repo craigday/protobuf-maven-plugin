@@ -25,7 +25,10 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.toolchain.Toolchain;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This mojo executes the {@code protoc} compiler with the specified plugin
@@ -138,6 +141,11 @@ public final class ProtocCompileCustomMojo extends AbstractProtocCompileMojo {
     )
     private String pluginArtifact;
 
+    /**
+     * Candidate artifacts to look for when auto-discovering gRPC version
+     */
+    private static Set<String> autoDiscoverArtifacts = new HashSet<>(Arrays.asList("grpc-core", "grpc-api"));
+
     @Override
     protected void addProtocBuilderParameters(final Protoc.Builder protocBuilder) throws MojoExecutionException {
         super.addProtocBuilderParameters(protocBuilder);
@@ -160,7 +168,7 @@ public final class ProtocCompileCustomMojo extends AbstractProtocCompileMojo {
         if (pluginExecutable == null && autoDetectForOsClassifier != null) {
             List<Artifact> dependencyArtifacts = getDependencyArtifacts();
             for (Artifact dependencyArtifact : dependencyArtifacts) {
-                if (dependencyArtifact.getGroupId().equals("io.grpc") && dependencyArtifact.getArtifactId().equals("grpc-core")) {
+                if (dependencyArtifact.getGroupId().equals("io.grpc") && autoDiscoverArtifacts.contains(dependencyArtifact.getArtifactId())) {
                     String grpcVersion = dependencyArtifact.getVersion();
                     pluginArtifact = "io.grpc:protoc-gen-grpc-java:" + grpcVersion + ":exe:" + autoDetectForOsClassifier;
                     getLog().info("Auto-discovered grpc " + grpcVersion + " (artifact=" + pluginArtifact + ")");
